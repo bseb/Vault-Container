@@ -1,0 +1,52 @@
+---
+version: '2'
+services:
+  vault:
+    container_name: "vault"
+    hostname: "vault"
+    image: vault:0.8.0
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.101
+    ports:
+      - 8200:8200
+    cap_add:
+      - IPC_LOCK
+    command: "server -config /vault/config.json"
+
+    volumes:
+      - ./vaultdata/logs:/vault/logs
+      - ./vaultdata/config.json:/vault/config.json
+  consul1:
+    container_name: "consul1"
+    hostname: "consul1"
+    image: consul:0.9.1
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.102
+    ports:
+      - 8500:8500
+      - 8600:8600/tcp
+      - 8600:8600/udp
+    command: "agent -server -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join 172.25.0.102 -bootstrap"
+
+  consul2:
+    container_name: "consul2"
+    hostname: "consul2"
+    image: consul:latest
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.103
+    ports:
+      - 18500:8500
+      - 18600:8600/tcp
+      - 18600:8600/udp
+    command: "agent -server -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join 172.25.0.102"
+    depends_on:
+      - consul1
+
+networks:
+  datacenter:
+    ipam:
+        config:
+        - subnet: 172.25.0.0/16
