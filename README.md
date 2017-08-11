@@ -1,5 +1,6 @@
 # Vault-Container
-Vault running in docker with consul backend
+Vault running in Docker for Mac with consul backend.
+Methods found in this repo will work on non MacOS machines, see caveats where noted.
 
 ## Running Vault
 ### Vault server
@@ -14,11 +15,11 @@ You can `brew install vault` to get the vault client.  You will then need to set
 
 `export VAULT_ADDR='http://127.0.0.1:8200'`
 
+If you are not using MacOS then alternative methods of installing the vault cli client can be found at https://www.vaultproject.io/downloads.html. 
 ### Accessing the vault
 
-Run `vault init`.  It will show you 5 Unseal Keys and a Root Token.  Copy them and do:
+Run `vault init`.  It will show you 5 Unseal Keys and a Root Token.  Copy them somewhere safe.
 
-`export VAULT_TOKEN={root token you were given}`
 
 To unseal vault and do anything to it you will have to give it 3 different unseal keys:
 ```
@@ -33,4 +34,6 @@ Once it is unsealed, you can log in and do stuff with the vault:
 
 `vault auth`
 
-It will prompt you for the token, it is the same root token as above.
+It will prompt you for the token, it wants  the root token that was provided from vault init.
+
+Further instructions for using vault can be found at https://www.vaultproject.io/docs/index.html
