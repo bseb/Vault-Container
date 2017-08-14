@@ -15,10 +15,10 @@ services:
     command: "server -config /vault/config.json"
     depends_on:
       - consul2
-
     volumes:
       - ./vaultdata/logs:/vault/logs
       - ./vaultdata/config.json:/vault/config.json
+
   consul1:
     container_name: "consul1"
     hostname: "consul1"
@@ -30,7 +30,8 @@ services:
       - 8500:8500
       - 8600:8600/tcp
       - 8600:8600/udp
-    command: "agent -server -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join 172.25.0.102 -bootstrap"
+      - 8301
+    command: "agent -server -ui -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join-wan 172.25.0.105 -bootstrap"
 
   consul2:
     container_name: "consul2"

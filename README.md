@@ -15,7 +15,7 @@ You can `brew install vault` to get the vault client.  You will then need to set
 
 `export VAULT_ADDR='http://127.0.0.1:8200'`
 
-If you are not using MacOS then alternative methods of installing the vault cli client can be found at https://www.vaultproject.io/downloads.html. 
+If you are not using MacOS then alternative methods of installing the vault cli client can be found at https://www.vaultproject.io/downloads.html.
 ### Accessing the vault
 
 Run `vault init`.  It will show you 5 Unseal Keys and a Root Token.  Copy them somewhere safe.
@@ -36,4 +36,22 @@ Once it is unsealed, you can log in and do stuff with the vault:
 
 It will prompt you for the token, it wants  the root token that was provided from vault init.
 
+The ui can be accessed through a web browser at http://127.0.0.1:8500
 Further instructions for using vault can be found at https://www.vaultproject.io/docs/index.html
+
+## Starting HA configuration
+A second docker compose file called HA-docker-compose.yaml is located in this repo that can be called by specifying the file name as on the command line.
+
+`docker-compose -f HA-docker-compose -d`
+
+This configuration will create two Consul data centers and two instances of Vault. To access the secondary instance of Vault set you VAULT_ADDR variable as follows.
+
+`export VAULT_ADDR='http://127.0.0.1:28200'`
+
+You will also be able to query each datacenter for the active, standby and all vault instances in a data center by querying that data centers's consul service as follows
+
+```
+dig +short active.vault.service.consul @127.0.0.1 -p 8600
+dig +short standby.vault.service.consul @127.0.0.1 -p 8600
+dig +short vault.service.consul @127.0.0.1 -p 8600
+```

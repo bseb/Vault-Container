@@ -1,0 +1,103 @@
+---
+version: '2'
+services:
+  vault-dc1:
+    container_name: "vault-dc1"
+    hostname: "vault-dc1"
+    image: vault:0.8.0
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.101
+    ports:
+      - 8200:8200
+    cap_add:
+      - IPC_LOCK
+    command: "server -config /vault/config.json"
+    depends_on:
+      - consuldc1n2
+    volumes:
+      - ./vaultdata/logs:/vault/logs
+      - ./vaultdata/dc1-config.json:/vault/config.json
+
+  consuldc1n1:
+    container_name: "consuldc1n1"
+    hostname: "consuldc1n1"
+    image: consul:0.9.1
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.102
+    ports:
+      - 8500:8500
+      - 8600:8600/tcp
+      - 8600:8600/udp
+      - 8301
+    command: "agent -server -ui -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join-wan 172.25.0.105 -bootstrap"
+
+  consuldc1n2:
+    container_name: "consuldc1n2"
+    hostname: "consuldc1n2"
+    image: consul:latest
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.103
+    ports:
+      - 18500:8500
+      - 18600:8600/tcp
+      - 18600:8600/udp
+      - 8301
+    command: "agent -server -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join 172.25.0.102"
+    depends_on:
+      - consuldc1n1
+  vault-dc2:
+    container_name: "vault-dc2"
+    hostname: "vault-dc2"
+    image: vault:0.8.0
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.106
+    ports:
+      - 28200:8200
+    cap_add:
+      - IPC_LOCK
+    command: "server -config /vault/config.json"
+    depends_on:
+      - consuldc2n2
+    volumes:
+      - ./vaultdata/logs:/vault/logs
+      - ./vaultdata/dc2-config.json:/vault/config.json
+
+  consuldc2n1:
+    container_name: "consuldc2n1"
+    hostname: "consuldc2n1"
+    image: consul:0.9.1
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.104
+    ports:
+      - 8301
+      - 28500:8500
+      - 28600:8600/tcp
+      - 28600:8600/udp
+    command: "agent -server -ui -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc2 -join-wan 172.25.0.102 -bootstrap"
+
+  consuldc2n2:
+    container_name: "consuldc2n2"
+    hostname: "consuldc2n2"
+    image: consul:latest
+    networks:
+      datacenter:
+        ipv4_address: 172.25.0.105
+    ports:
+      - 8301
+      - 38500:8500
+      - 38600:8600/tcp
+      - 38600:8600/udp
+    command: "agent -server -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc2 -join 172.25.0.104"
+    depends_on:
+      - consuldc2n1
+
+networks:
+  datacenter:
+    ipam:
+        config:
+        - subnet: 172.25.0.0/16
