@@ -1,0 +1,9 @@
+storage "consul" {
+  address = "172.25.0.104:8500"
+  path    = "vault"
+}
+
+listener "tcp" {
+  address     = "172.25.0.111:8200"
+  tls_disable = 1
+}
