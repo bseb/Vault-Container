@@ -4,6 +4,6 @@ storage "consul" {
 }
 
 listener "tcp" {
-  address     = "172.25.0.106:8200"
+  address     = "172.25.0.110:8200"
   tls_disable = 1
 }
