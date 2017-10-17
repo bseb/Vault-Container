@@ -49,7 +49,7 @@ services:
       - 8600:8600/udp
       - 8301
       - 8201
-    command: "agent -server -ui -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join-wan 172.25.0.105 -bootstrap"
+    command: "agent -server -ui -bind=0.0.0.0 -client 0.0.0.0 -datacenter dc1 -join-wan 172.25.0.102 -bootstrap"
 
   consuldc1n2:
     container_name: "consuldc1n2"
